@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f6f8;
+  --foreground: #16181d;
+  --surface: #ffffff;
+  --border: #e4e6eb;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1115;
+    --foreground: #ecedef;
+    --surface: #181b21;
+    --border: #2a2e37;
+    --muted: #9aa1ad;
+    --primary: #3b82f6;
+    --primary-foreground: #ffffff;
+    --success: #10b981;
+    --danger: #f87171;
+    --warning: #fbbf24;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Zones sûres (encoche iOS) */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+}
+
+/* Champs de formulaire */
+.champ {
+  @apply w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-base text-foreground placeholder:text-muted/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60;
+}
+.etiquette {
+  @apply mb-1 block text-sm font-medium text-muted;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+}
+.btn-primaire {
+  @apply btn bg-primary text-primary-foreground hover:brightness-110;
+}
+.btn-secondaire {
+  @apply btn border border-border bg-surface text-foreground hover:bg-background;
+}
+.btn-danger {
+  @apply btn bg-danger text-white hover:brightness-110;
+}
+.btn-succes {
+  @apply btn bg-success text-white hover:brightness-110;
+}
+.carte {
+  @apply rounded-xl border border-border bg-surface shadow-sm;
+}

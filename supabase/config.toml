@@ -1,0 +1,7 @@
+# Configuration minimale pour `supabase functions deploy`.
+project_id = "depenses-enfants"
+
+[functions.relances]
+# L'authentification est faite par l'en-tête x-cron-secret (voir index.ts),
+# pas par le JWT Supabase : pg_cron appelle la fonction sans jeton utilisateur.
+verify_jwt = false
