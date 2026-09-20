@@ -6,6 +6,7 @@ import { getDepense, getRelances, getSession, urlRecuSignee } from "@/lib/data";
 import { montantDu } from "@/lib/calculs";
 import { formatDateHeure, formatDateLongue, formatMontant } from "@/lib/format";
 import { ActionsDepense } from "@/components/ActionsDepense";
+import { PreuvePaiement } from "@/components/PreuvePaiement";
 import { BadgeCategorie, BadgeStatut } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Détail de la dépense" };
@@ -23,7 +24,7 @@ export default async function PageDepense({ params }: PageProps<"/depenses/[id]"
   const { id } = await params;
   const [{ moi, profils }, d] = await Promise.all([getSession(), getDepense(id)]);
   if (!d) notFound();
-  const [urlRecu, relances] = await Promise.all([urlRecuSignee(d.photo_recu_url), getRelances(d.id)]);
+  const [urlRecu, urlPreuve, relances] = await Promise.all([urlRecuSignee(d.photo_recu_url), urlRecuSignee(d.preuve_paiement_url), getRelances(d.id)]);
 
   const nom = (pid: string | null | undefined) => profils.find((p) => p.id === pid)?.nom ?? "—";
   const payeur = nom(d.payeur_id);
@@ -91,6 +92,12 @@ export default async function PageDepense({ params }: PageProps<"/depenses/[id]"
                 <img src={urlRecu} alt="Photo du reçu" className="max-h-[70vh] w-full rounded-lg border border-border object-contain" />
               </a>
             )}
+          </div>
+        )}
+
+        {d.statut !== "archive" && (
+          <div className="border-t border-border p-5">
+            <PreuvePaiement depenseId={d.id} userId={moi.id} chemin={d.preuve_paiement_url} url={urlPreuve} peutModifier />
           </div>
         )}
 

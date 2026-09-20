@@ -51,6 +51,7 @@ export type Depense = {
   methode_paiement: string | null;
   notes: string | null;
   photo_recu_url: string | null;
+  preuve_paiement_url: string | null;
   statut: Statut;
   contestation_commentaire: string | null;
   paye_par_id: string | null;

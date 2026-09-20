@@ -9,7 +9,7 @@ PWA mobile-first (installable sur téléphone), pleinement utilisable sur PC.
 
 - **Accueil** : bandeau de solde en temps réel (« Dominique te doit 342 $ »), liste des dépenses en cours, filtres (mois, catégorie, statut, recherche), case « marquer payé » visible seulement pour le créditeur, bouton flottant « + Dépense ».
 - **Nouvelle dépense** : date, description, montant, bénéficiaire, catégorie (pré-remplit le % de remboursement selon la règle fixe ou le prorata annuel), % modifiable, méthode de paiement, notes, photo du reçu (compressée côté client, stockée dans un bucket privé), case « déjà payé ».
-- **Détail** : toutes les infos, reçu en grand, « Marquer payé » (créditeur), « Contester » avec commentaire (débiteur), « Modifier » / « Archiver » (créateur, tant que non réglée).
+- **Détail** : toutes les infos, reçu en grand, preuve de paiement (capture Interac, PDF) que l'un ou l'autre peut joindre, « Marquer payé » (créditeur), « Contester » avec commentaire (débiteur), « Modifier » / « Archiver » (créateur, tant que non réglée).
 - **Règlement mensuel** : solde net du mois, bouton « Confirmer le règlement » qui marque toutes les dépenses du mois comme payées (réservé au créancier net du mois).
 - **Archives** : dépenses payées ou archivées avec les mêmes filtres. Le créateur d'une dépense peut aussi la supprimer définitivement (erreur de saisie).
 - **Export** : CSV (compatible Excel FR) ou PDF (avec résumé par payeur et par catégorie), filtré par année, catégorie et statut.

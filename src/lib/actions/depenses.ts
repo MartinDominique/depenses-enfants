@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession, SELECT_DEPENSE } from "@/lib/data";
 import {
+  emailPreuvePaiement,
   emailDepenseContestee,
   emailDepenseModifiee,
   emailDepensePayee,
@@ -152,7 +153,7 @@ export async function archiverDepense(id: string, archiver = true): Promise<Etat
   return { succes: archiver ? "Dépense archivée." : "Dépense remise en cours." };
 }
 
-export async function confirmerReglementMois(annee: number, mois: number): Promise<EtatAction> {
+export async function confirmerReglementMois(annee: number, mois: number, preuve: string | null = null): Promise<EtatAction> {
   const { supabase, moi, autre } = await getSession();
 
   // net avant règlement, pour le courriel
@@ -166,7 +167,7 @@ export async function confirmerReglementMois(annee: number, mois: number): Promi
     .lt("date", fin);
   const net = (liste ?? []).reduce((s, d) => s + montantPourMoi(d, moi.id), 0);
 
-  const { data: nb, error } = await supabase.rpc("confirmer_reglement_mois", { p_annee: annee, p_mois: mois });
+  const { data: nb, error } = await supabase.rpc("confirmer_reglement_mois", { p_annee: annee, p_mois: mois, p_preuve: preuve });
   if (error) return { erreur: error.message };
 
   if (autre && Number(nb) > 0) await emailReglementMensuel(formatMois(annee, mois), Number(nb), net, moi, autre);
@@ -188,4 +189,32 @@ export async function supprimerDepense(id: string): Promise<EtatAction> {
   if (d.photo_recu_url) await supabase.storage.from("recus").remove([d.photo_recu_url]);
   revalider();
   redirect("/?suppression=1");
+}
+
+/** Joint (ou retire) une preuve de paiement. Accessible aux deux parents. */
+export async function enregistrerPreuvePaiement(id: string, chemin: string | null): Promise<EtatAction> {
+  const { supabase, moi, profils } = await getSession();
+  const { data: avant } = await supabase.from("depenses").select("preuve_paiement_url, statut").eq("id", id).maybeSingle();
+  if (!avant) return { erreur: "Dépense introuvable." };
+  if (avant.statut === "archive") return { erreur: "Impossible sur une dépense archivée." };
+
+  const { data, error } = await supabase
+    .from("depenses")
+    .update({ preuve_paiement_url: chemin })
+    .eq("id", id)
+    .select(SELECT_DEPENSE)
+    .single();
+  if (error || !data) return { erreur: error?.message ?? "Enregistrement impossible." };
+
+  if (avant.preuve_paiement_url && avant.preuve_paiement_url !== chemin) {
+    await supabase.storage.from("recus").remove([avant.preuve_paiement_url]);
+  }
+
+  const d = data as Depense;
+  const payeur = profils.find((p) => p.id === d.payeur_id);
+  // Le débiteur joint une preuve → le créancier est avisé pour qu'il confirme.
+  if (chemin && payeur && payeur.id !== moi.id && d.statut !== "paye") await emailPreuvePaiement(d, payeur, moi);
+
+  revalider();
+  return { succes: chemin ? "Preuve de paiement enregistrée." : "Preuve retirée." };
 }
