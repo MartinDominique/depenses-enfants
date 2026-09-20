@@ -3,10 +3,11 @@
 import { useActionState, useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { enregistrerRegle, supprimerRegle } from "@/lib/actions/parametres";
-import type { RegleRemboursement } from "@/lib/types";
+import type { Profil, RegleRemboursement } from "@/lib/types";
+import { estMartin } from "@/lib/calculs";
 import { Message } from "../ui";
 
-export function Prorata({ regles }: { regles: RegleRemboursement[] }) {
+export function Prorata({ regles, profils }: { regles: RegleRemboursement[]; profils: Profil[] }) {
   const [etat, action, enCours] = useActionState(enregistrerRegle, null);
   const [enCoursSuppr, startTransition] = useTransition();
   const prochaineAnnee = regles.length ? Math.max(...regles.map((r) => r.annee)) + 1 : new Date().getFullYear();
@@ -18,6 +19,12 @@ export function Prorata({ regles }: { regles: RegleRemboursement[] }) {
         <h2 className="font-semibold">Prorata annuel</h2>
         <p className="text-xs text-muted">Utilisé par les catégories « prorata » (garde, médical, dentaire…). Part de chacun selon les revenus.</p>
       </div>
+      {profils.filter(estMartin).length !== 1 && (
+        <p className="border-b border-border bg-warning/10 px-4 py-2 text-xs text-warning">
+          Attention : le prorata s&apos;applique au profil dont le nom commence par « Martin ». Actuellement, les profils s&apos;appellent{" "}
+          {profils.map((p) => `« ${p.nom} »`).join(" et ")}. Corrigez les noms dans « Mon profil » (un seul doit être « Martin »).
+        </p>
+      )}
       <table className="w-full text-sm">
         <thead className="text-left text-xs text-muted">
           <tr>

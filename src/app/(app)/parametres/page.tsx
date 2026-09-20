@@ -8,12 +8,12 @@ import { TitrePage } from "@/components/ui";
 export const metadata: Metadata = { title: "Réglages" };
 
 export default async function PageParametres() {
-  const [{ moi, user }, categories, regles, parametres] = await Promise.all([getSession(), getCategories(), getRegles(), getParametres()]);
+  const [{ moi, user, profils }, categories, regles, parametres] = await Promise.all([getSession(), getCategories(), getRegles(), getParametres()]);
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <TitrePage titre="Réglages" />
       <Categories categories={categories} />
-      <Prorata regles={regles} />
+      <Prorata regles={regles} profils={profils} />
       <RelancesForm parametres={parametres} />
       <ProfilForm moi={moi} emailConnexion={user.email ?? ""} />
     </div>
