@@ -120,6 +120,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from,
           to: [debiteur.email],
+          reply_to: crediteur ? `${crediteur.nom} <${crediteur.email}>` : undefined,
           subject: `${SUJET_PREFIXE} Rappel : ${formatMontant(total)} en attente de remboursement`,
           html,
         }),

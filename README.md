@@ -71,9 +71,9 @@ Variables d'environnement (voir `.env.example`) :
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (publishable) |
 | `NEXT_PUBLIC_APP_URL` | URL publique de l'app (liens dans les courriels) |
 | `RESEND_API_KEY` | Clé Resend (domaine `servicestmt.ca` déjà vérifié) |
-| `EMAIL_FROM` | Expéditeur, ex. `Dépenses enfants <depenses@servicestmt.ca>` |
+| `EMAIL_FROM` | Facultatif. Expéditeur, défaut `Dépenses enfants <depenses@servicestmt.ca>` |
 
-Sans `RESEND_API_KEY`, l'app fonctionne normalement et se contente de journaliser les courriels non envoyés.
+Sans `RESEND_API_KEY`, l'app fonctionne normalement et se contente de journaliser les courriels non envoyés. Chaque courriel porte un *Reply-To* vers le parent à l'origine de l'action : répondre au courriel lui écrit directement.
 
 ### 4. Développement local
 
