@@ -173,3 +173,19 @@ export async function confirmerReglementMois(annee: number, mois: number): Promi
   revalider();
   return { succes: `${nb} dépense${Number(nb) > 1 ? "s" : ""} marquée${Number(nb) > 1 ? "s" : ""} payée${Number(nb) > 1 ? "s" : ""}.` };
 }
+
+/** Suppression définitive — réservée au créateur (policy RLS). */
+export async function supprimerDepense(id: string): Promise<EtatAction> {
+  const { supabase, moi } = await getSession();
+  const { data: d } = await supabase.from("depenses").select("cree_par_id, photo_recu_url").eq("id", id).maybeSingle();
+  if (!d) return { erreur: "Dépense introuvable." };
+  if (d.cree_par_id !== moi.id) return { erreur: "Seul le créateur peut supprimer cette dépense." };
+
+  const { error, count } = await supabase.from("depenses").delete({ count: "exact" }).eq("id", id);
+  if (error) return { erreur: `Suppression impossible : ${error.message}` };
+  if (!count) return { erreur: "Suppression refusée par la base de données." };
+
+  if (d.photo_recu_url) await supabase.storage.from("recus").remove([d.photo_recu_url]);
+  revalider();
+  redirect("/?suppression=1");
+}

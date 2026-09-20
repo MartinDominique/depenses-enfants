@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
-import { ArchiveRestore, Check, MessageSquareWarning, Pencil, Trash2, Undo2 } from "lucide-react";
-import { archiverDepense, changerStatutPaye, contesterDepense } from "@/lib/actions/depenses";
+import { Archive, ArchiveRestore, Check, MessageSquareWarning, Pencil, Trash2, Undo2 } from "lucide-react";
+import { archiverDepense, changerStatutPaye, contesterDepense, supprimerDepense } from "@/lib/actions/depenses";
 import type { EtatAction } from "@/lib/actions/etat";
 import type { Depense, Profil } from "@/lib/types";
 import { Message } from "./ui";
@@ -58,12 +58,28 @@ export function ActionsDepense({ d, moi }: { d: Depense; moi: Profil }) {
         type="button"
         disabled={enCours}
         onClick={() => {
-          if (confirm("Effacer cette dépense ? Elle sera archivée : retirée de la liste et du solde, mais toujours consultable dans Archives."))
+          if (confirm("Archiver cette dépense ? Elle sera retirée de la liste et du solde, mais restera consultable dans Archives."))
             lancer(() => archiverDepense(d.id, true));
+        }}
+        className="btn-secondaire text-muted"
+      >
+        <Archive size={18} /> Archiver
+      </button>,
+    );
+  }
+  if (jeSuisCreateur) {
+    boutons.push(
+      <button
+        key="supprimer"
+        type="button"
+        disabled={enCours}
+        onClick={() => {
+          if (confirm("Supprimer définitivement cette dépense ? Cette action est irréversible."))
+            lancer(() => supprimerDepense(d.id));
         }}
         className="btn-secondaire text-danger"
       >
-        <Trash2 size={18} /> Effacer (archiver)
+        <Trash2 size={18} /> Supprimer
       </button>,
     );
   }

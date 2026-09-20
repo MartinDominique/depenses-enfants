@@ -11,7 +11,7 @@ PWA mobile-first (installable sur téléphone), pleinement utilisable sur PC.
 - **Nouvelle dépense** : date, description, montant, bénéficiaire, catégorie (pré-remplit le % de remboursement selon la règle fixe ou le prorata annuel), % modifiable, méthode de paiement, notes, photo du reçu (compressée côté client, stockée dans un bucket privé), case « déjà payé ».
 - **Détail** : toutes les infos, reçu en grand, « Marquer payé » (créditeur), « Contester » avec commentaire (débiteur), « Modifier » / « Archiver » (créateur, tant que non réglée).
 - **Règlement mensuel** : solde net du mois, bouton « Confirmer le règlement » qui marque toutes les dépenses du mois comme payées (réservé au créancier net du mois).
-- **Archives** : dépenses payées ou archivées avec les mêmes filtres. Aucune suppression réelle.
+- **Archives** : dépenses payées ou archivées avec les mêmes filtres. Le créateur d'une dépense peut aussi la supprimer définitivement (erreur de saisie).
 - **Export** : CSV (compatible Excel FR) ou PDF (avec résumé par payeur et par catégorie), filtré par année, catégorie et statut.
 - **Réglages** : catégories (nom, fixe/prorata, %, actif, ordre, ajout), prorata par année, délai des rappels, profil (nom et courriel de notification).
 - **Courriels (Resend)** : nouvelle dépense, dépense modifiée, dépense payée, dépense contestée, règlement mensuel, et rappel automatique quotidien (pg_cron → Edge Function) après X jours sans paiement, journalisé dans `relances` pour ne jamais relancer deux fois dans la même période.
@@ -24,7 +24,7 @@ PWA mobile-first (installable sur téléphone), pleinement utilisable sur PC.
   - seul le créateur modifie une dépense non réglée ;
   - seul le créditeur (payeur) passe le statut à `paye` (et peut l'annuler) ;
   - seul le débiteur passe le statut à `conteste` (commentaire obligatoire) ;
-  - seul le créateur archive / remet en cours ; aucune policy `DELETE`.
+  - seul le créateur archive / remet en cours / supprime définitivement (policy `DELETE` sur `cree_par_id`).
 - **Règlement mensuel** : la fonction SQL `confirmer_reglement_mois` n'accepte que le créancier net du mois (ou n'importe qui si le net est 0), puisque le règlement compense les dépenses des deux sens.
 - Les dépenses **contestées** sont exclues du solde et du règlement mensuel tant qu'elles ne sont pas corrigées par leur créateur (ce qui les remet « en cours »).
 - Une **dépense personnelle** (bénéficiaire `N/A`) pré-remplit 100 % de remboursement.
@@ -34,7 +34,7 @@ PWA mobile-first (installable sur téléphone), pleinement utilisable sur PC.
 ### 1. Supabase
 
 1. Créer un projet Supabase.
-2. Appliquer la migration `supabase/migrations/20260920000000_init.sql` (SQL Editor, ou `supabase db push` avec la CLI). Elle crée les tables, les triggers, les policies RLS, le bucket `recus`, la fonction `lancer_relances()` et la tâche pg_cron quotidienne (12:00 UTC).
+2. Appliquer les migrations de `supabase/migrations/` dans l'ordre (SQL Editor, ou `supabase db push` avec la CLI). La première crée les tables, les triggers, les policies RLS, le bucket `recus`, la fonction `lancer_relances()` et la tâche pg_cron quotidienne (12:00 UTC).
    > Les extensions `pg_cron` et `pg_net` doivent être activées (Database → Extensions) ; la migration le fait si votre rôle y est autorisé.
 3. **Créer les deux comptes** dans Authentication → Users → *Add user* (pas d'inscription publique dans l'app). Renseigner le champ *User Metadata* avec `{"nom": "Martin"}` et `{"nom": "Dominique"}` pour que le profil soit bien nommé (sinon le nom est dérivé du courriel et modifiable dans les Réglages). Le nom sert au calcul du prorata : il doit commencer par « Martin » pour le compte de Martin.
 4. Dans l'app, Réglages → **Prorata annuel** : saisir l'année courante (ex. Martin 60 % / Dominique 40 %).
