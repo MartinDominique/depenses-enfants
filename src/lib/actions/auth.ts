@@ -38,11 +38,6 @@ export async function connexionLienMagique(_prev: EtatAction, formData: FormData
   return { succes: `Un lien de connexion a été envoyé à ${email}.` };
 }
 
-export async function deconnexion() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
-}
 
 export async function changerMotDePasse(_prev: EtatAction, formData: FormData): Promise<EtatAction> {
   const nouveau = String(formData.get("nouveau") ?? "");

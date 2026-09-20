@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Archive, Download, Home, LogOut, Scale, Settings } from "lucide-react";
-import { deconnexion } from "@/lib/actions/auth";
+import { Logo } from "./Logo";
 
 const LIENS = [
   { href: "/", libelle: "Accueil", icone: Home },
@@ -23,7 +23,7 @@ export function NavigationHaut({ nom }: { nom: string }) {
     <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex items-center gap-2 font-bold">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">$</span>
+          <Logo className="h-8 w-8" />
           <span className="hidden sm:inline">Dépenses enfants</span>
         </Link>
         <nav className="hidden items-center gap-1 md:flex">
@@ -42,7 +42,7 @@ export function NavigationHaut({ nom }: { nom: string }) {
         </nav>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted">{nom}</span>
-          <form action={deconnexion}>
+          <form action="/auth/deconnexion" method="post">
             <button type="submit" title="Se déconnecter" className="rounded-lg p-2 text-muted hover:bg-background hover:text-foreground">
               <LogOut size={18} />
             </button>
