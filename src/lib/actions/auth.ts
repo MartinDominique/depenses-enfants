@@ -38,8 +38,21 @@ export async function connexionLienMagique(_prev: EtatAction, formData: FormData
   return { succes: `Un lien de connexion a été envoyé à ${email}.` };
 }
 
-export async function deconnexion() {
+
+export async function changerMotDePasse(_prev: EtatAction, formData: FormData): Promise<EtatAction> {
+  const nouveau = String(formData.get("nouveau") ?? "");
+  const confirmation = String(formData.get("confirmation") ?? "");
+  if (nouveau.length < 8) return { erreur: "Le mot de passe doit contenir au moins 8 caractères." };
+  if (nouveau !== confirmation) return { erreur: "Les deux mots de passe ne correspondent pas." };
+
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  const { error } = await supabase.auth.updateUser({ password: nouveau });
+  if (error) {
+    return {
+      erreur: error.message.includes("different from the old")
+        ? "Le nouveau mot de passe doit être différent de l'ancien."
+        : `Changement impossible : ${error.message}`,
+    };
+  }
+  return { succes: "Mot de passe modifié." };
 }

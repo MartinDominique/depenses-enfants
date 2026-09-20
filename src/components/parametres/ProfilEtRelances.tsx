@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { modifierParametres, modifierProfil } from "@/lib/actions/parametres";
+import { changerMotDePasse } from "@/lib/actions/auth";
 import type { Parametres, Profil } from "@/lib/types";
 import { Message } from "../ui";
 
@@ -25,6 +26,34 @@ export function ProfilForm({ moi, emailConnexion }: { moi: Profil; emailConnexio
         <Message etat={etat} />
         <div className="flex justify-end">
           <button type="submit" disabled={enCours} className="btn-primaire py-1.5 text-xs">Enregistrer</button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+export function MotDePasseForm() {
+  const [etat, action, enCours] = useActionState(changerMotDePasse, null);
+  return (
+    <section className="carte">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="font-semibold">Changer mon mot de passe</h2>
+        <p className="text-xs text-muted">Mot de passe oublié ? Connecte-toi avec le lien magique par courriel, puis définis-en un nouveau ici.</p>
+      </div>
+      <form action={action} className="space-y-3 p-4" autoComplete="off">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="etiquette" htmlFor="nouveau">Nouveau mot de passe</label>
+            <input id="nouveau" name="nouveau" type="password" minLength={8} required autoComplete="new-password" className="champ py-2" />
+          </div>
+          <div>
+            <label className="etiquette" htmlFor="confirmation">Confirmation</label>
+            <input id="confirmation" name="confirmation" type="password" minLength={8} required autoComplete="new-password" className="champ py-2" />
+          </div>
+        </div>
+        <Message etat={etat} />
+        <div className="flex justify-end">
+          <button type="submit" disabled={enCours} className="btn-primaire py-1.5 text-xs">{enCours ? "Enregistrement…" : "Changer le mot de passe"}</button>
         </div>
       </form>
     </section>
