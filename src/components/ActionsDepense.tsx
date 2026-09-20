@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
-import { Archive, ArchiveRestore, Check, MessageSquareWarning, Pencil, Undo2 } from "lucide-react";
+import { ArchiveRestore, Check, MessageSquareWarning, Pencil, Trash2, Undo2 } from "lucide-react";
 import { archiverDepense, changerStatutPaye, contesterDepense } from "@/lib/actions/depenses";
 import type { EtatAction } from "@/lib/actions/etat";
 import type { Depense, Profil } from "@/lib/types";
@@ -49,16 +49,21 @@ export function ActionsDepense({ d, moi }: { d: Depense; moi: Profil }) {
       <Link key="modifier" href={`/depenses/${d.id}/modifier`} className="btn-secondaire">
         <Pencil size={18} /> Modifier
       </Link>,
+    );
+  }
+  if (jeSuisCreateur && d.statut !== "archive") {
+    boutons.push(
       <button
         key="archiver"
         type="button"
         disabled={enCours}
         onClick={() => {
-          if (confirm("Archiver cette dépense ? Elle ne comptera plus dans le solde.")) lancer(() => archiverDepense(d.id, true));
+          if (confirm("Effacer cette dépense ? Elle sera archivée : retirée de la liste et du solde, mais toujours consultable dans Archives."))
+            lancer(() => archiverDepense(d.id, true));
         }}
-        className="btn-secondaire text-muted"
+        className="btn-secondaire text-danger"
       >
-        <Archive size={18} /> Archiver
+        <Trash2 size={18} /> Effacer (archiver)
       </button>,
     );
   }
