@@ -120,3 +120,12 @@ export async function emailReglementMensuel(
     confirmateur,
   );
 }
+
+export async function emailPreuvePaiement(d: Depense, payeur: Profil, auteur: Profil) {
+  const du = formatMontant(montantDu(d));
+  const corps = `
+    <p>Bonjour ${echapper(payeur.nom)},</p>
+    <p>${echapper(auteur.nom)} a joint une preuve de paiement de <strong>${du}</strong> pour la dépense suivante. Tu peux vérifier et marquer la dépense comme payée.</p>
+    ${tableauDepense(d, payeur)}`;
+  await envoyer(payeur.email, `Preuve de paiement : ${d.description} (${du})`, gabarit("Preuve de paiement jointe", corps, d.id), auteur);
+}

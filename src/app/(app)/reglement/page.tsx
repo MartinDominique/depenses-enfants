@@ -64,7 +64,7 @@ export default async function PageReglement({ searchParams }: PageProps<"/reglem
         </div>
         <div className="mt-4">
           {peutConfirmer ? (
-            <BoutonReglement annee={annee} mois={mois} nb={depenses.length} libelle={libelle} />
+            <BoutonReglement annee={annee} mois={mois} nb={depenses.length} libelle={libelle} userId={moi.id} />
           ) : depenses.length === 0 ? (
             <p className="text-center text-sm text-muted">Rien à régler pour ce mois.</p>
           ) : (

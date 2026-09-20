@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Camera } from "lucide-react";
+import { Camera, FileCheck } from "lucide-react";
 import { montantDu } from "@/lib/calculs";
 import { formatDateCourte, formatMontant } from "@/lib/format";
 import type { Depense, Profil } from "@/lib/types";
@@ -29,6 +29,7 @@ export function DepenseCarte({ d, moi, profils }: { d: Depense; moi: Profil; pro
           <div className="flex items-center gap-1.5">
             <p className="truncate font-medium">{d.description}</p>
             {d.photo_recu_url && <Camera size={14} className="shrink-0 text-muted" aria-label="Reçu joint" />}
+            {d.preuve_paiement_url && <FileCheck size={14} className="shrink-0 text-success" aria-label="Preuve de paiement jointe" />}
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <BadgeCategorie categorie={d.categorie} />
